@@ -1,10 +1,9 @@
 import axios from "node_modules/axios";
+import { GetPeopleProps } from "types/types";
 
-interface getPeopleProps {
-  term: string;
-}
-
-export const getPeople = ({ term }: getPeopleProps) => {
-  const response = axios.get(`https://swapi.dev/api/people?search=${term}`);
+export const getPeople = ({ term, page }: GetPeopleProps) => {
+  const response = axios.get(
+    `https://swapi.dev/api/people/?page=${page}&search=${term}`
+  );
   return response;
 };

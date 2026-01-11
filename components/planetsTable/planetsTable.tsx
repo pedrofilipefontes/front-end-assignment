@@ -1,20 +1,25 @@
 import { useGetPlanets } from "hooks/useGetPlanets";
-import { Input } from "node_modules/antd/es";
+import { Drawer, Input } from "node_modules/antd/es";
 import Table from "node_modules/antd/es/table";
+import { useDebounce } from "hooks/useDebounce";
+import { useSetPage } from "hooks/useSetPage";
+import { useSetSearch } from "hooks/useSetSearch";
+import { PeopleTableProps, PlanetsTableProps } from "types/types";
+import { planetsColumnsData } from "constants/columns";
+import { useDrawer } from "hooks/useDrawerInfo";
+import { SetStateAction, useState } from "react";
 import styles from "../../pages/tables.module.css";
-import { useState } from "react";
-
-interface PlanetsTableProps {
-  name: string;
-  orbital_period: string;
-  population: string;
-  rotation_period: string;
-  terrain: string;
-}
 
 export function PlanetsTable() {
-  const [term, setTerm] = useState<string>("");
-  const { data, isLoading } = useGetPlanets({ term });
+  const { search, setSearch } = useSetSearch();
+  const debouncedTerm = useDebounce(search, 500);
+  const { page, setPage } = useSetPage();
+  const { data, isLoading, count } = useGetPlanets({
+    term: debouncedTerm,
+    page,
+  });
+  const { isOpen, setIsOpen, onClose } = useDrawer();
+  const [record, setRecord] = useState<PlanetsTableProps | null>(null);
 
   const tableData = data?.map((item: PlanetsTableProps) => ({
     name: item?.name,
@@ -24,42 +29,49 @@ export function PlanetsTable() {
     terrain: item?.terrain,
   }));
 
-  const columnsData = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Orbital Period",
-      dataIndex: "orbital_period",
-      key: "orbital_period",
-    },
-    {
-      title: "Population",
-      dataIndex: "population",
-      key: "population",
-    },
-    {
-      title: "Rotation Period",
-      dataIndex: "rotation_period",
-      key: "rotation_period",
-    },
-    {
-      title: "Terrain",
-      dataIndex: "terrain",
-      key: "terrain",
-    },
-  ];
-
   return (
-    <div className={styles.container}>
+    <>
       <Input
-        value={term}
-        onChange={(e) => setTerm(e.target.value)}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
         placeholder="Search"
       />
-      <Table loading={isLoading} dataSource={tableData} columns={columnsData} />
-    </div>
+      <Table
+        pagination={{
+          pageSize: 10,
+          onChange: (page) => setPage(page),
+          current: page,
+          total: count,
+          showSizeChanger: false,
+        }}
+        loading={isLoading}
+        dataSource={tableData}
+        columns={planetsColumnsData}
+        onRow={(record) => {
+          return {
+            onDoubleClick: () => {
+              setRecord(
+                record as unknown as SetStateAction<PlanetsTableProps | null>
+              );
+              setIsOpen(true);
+            },
+          };
+        }}
+      />
+      <Drawer
+        title="Planet Details"
+        closable={{ "aria-label": "Close Button" }}
+        open={isOpen}
+        onClose={onClose}
+      >
+        <div className={styles.drawer}>
+          <b>Name:</b> {record?.name}
+          <b>Orbital Period:</b> {record?.orbital_period}
+          <b>Population:</b> {record?.population}
+          <b>Rotation Period:</b> {record?.rotation_period}
+          <b>Terrain:</b> {record?.terrain}
+        </div>
+      </Drawer>
+    </>
   );
 }

@@ -1,10 +1,9 @@
 import axios from "node_modules/axios";
+import { GetStarShipsProps } from "types/types";
 
-interface getStarShipsProps {
-  term: string;
-}
-
-export const getStarShips = ({ term }: getStarShipsProps) => {
-  const response = axios.get(`https://swapi.dev/api/starships?search=${term}`);
+export const getStarShips = ({ term, page }: GetStarShipsProps) => {
+  const response = axios.get(
+    `https://swapi.dev/api/starships?search=${term}&page=${page}`
+  );
   return response;
 };

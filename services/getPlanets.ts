@@ -1,10 +1,9 @@
 import axios from "node_modules/axios";
+import { GetPlanetsProps } from "types/types";
 
-interface getPlanetsProps {
-  term: string;
-}
-
-export const getPlanets = ({ term }: getPlanetsProps) => {
-  const response = axios.get(`https://swapi.dev/api/planets?search=${term}`);
+export const getPlanets = ({ term, page }: GetPlanetsProps) => {
+  const response = axios.get(
+    `https://swapi.dev/api/planets/?search=${term}&page=${page}`
+  );
   return response;
 };

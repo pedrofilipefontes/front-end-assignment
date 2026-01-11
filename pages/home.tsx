@@ -1,8 +1,7 @@
 "use client";
-import { useGetPeople } from "hooks/useGetPeople";
 import { Tabs } from "antd";
 import type { TabsProps } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "./home.module.css";
 import { PeopleTable } from "components/peopleTable/peopleTable";
@@ -16,29 +15,32 @@ export default function About() {
     setActiveTab(key);
   };
 
+  useEffect(() => {
+    setActiveTab("planets");
+  }, []);
+
   const items: TabsProps["items"] = [
     {
-      key: "1",
+      key: "planets",
       label: "Planets",
     },
     {
-      key: "2",
+      key: "people",
       label: "People",
     },
     {
-      key: "3",
+      key: "starships",
       label: "StarShips",
     },
   ];
 
   return (
     <div className={styles.container}>
-      <div>
-        <Tabs defaultActiveKey={activeTab} items={items} onChange={onChange} />
-        {activeTab === "1" && <PlanetsTable />}
-        {activeTab === "2" && <PeopleTable />}
-        {activeTab === "3" && <StarShipsTable />}
-      </div>
+      <div className={styles.title}>Star Wars Info</div>
+      <Tabs defaultActiveKey={activeTab} items={items} onChange={onChange} />
+      {activeTab === "planets" && <PlanetsTable />}
+      {activeTab === "people" && <PeopleTable />}
+      {activeTab === "starships" && <StarShipsTable />}
     </div>
   );
 }
