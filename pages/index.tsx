@@ -1,10 +1,15 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import { Tabs } from 'antd';
+import { useEffect } from "react";
+import router from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  useEffect(() => {
+    router.push("/home");
+  }, []);
+
   return (
     <>
       <Head>
@@ -12,8 +17,7 @@ export default function Home() {
         <meta name="description" content="An amazing integration!" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <main className={inter.className}>
-      </main>
+      <main className={inter.className}></main>
     </>
   );
 }

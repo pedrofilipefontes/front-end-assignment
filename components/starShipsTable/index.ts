@@ -1,0 +1,1 @@
+export {starShipsTable} from "./starShipsTable";
